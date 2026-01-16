@@ -1,6 +1,6 @@
 # Write For California - DBD Admin Tools
 
-Tools for managing and analyzing DBD (Daily Discussion Board) posts on [Write For California](https://writeforcalifornia.com).
+Tools for managing and analyzing DBD (Daily Bear Dump) posts on [Write For California](https://writeforcalifornia.com).
 
 ## Features
 
