@@ -1,0 +1,18 @@
+[project]
+name = "wfc"
+version = "0.1.0"
+description = "Write For California - DBD admin tools"
+requires-python = ">=3.8"
+dependencies = [
+    "requests",
+    "matplotlib",
+]
+
+[project.scripts]
+wfc-monitor = "wfc.monitor:main"
+wfc-scrape = "wfc.scraper:main"
+wfc-chart = "wfc.charts:main"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
