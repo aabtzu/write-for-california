@@ -51,7 +51,10 @@ def get_comment_count(url: str) -> Optional[int]:
     """Fetch the page and extract the comment count."""
     try:
         comments_url = f"{url}/comments" if not url.endswith("/comments") else url
-        response = requests.get(comments_url, timeout=30)
+        # Add cache-busting to get fresh data
+        headers = {"Cache-Control": "no-cache", "Pragma": "no-cache"}
+        response = requests.get(f"{comments_url}?t={int(datetime.now().timestamp())}",
+                                headers=headers, timeout=30)
         response.raise_for_status()
 
         # Look for "N Comments" pattern in the page
