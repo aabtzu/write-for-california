@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "WFC New Reply Notifier",
+  "version": "1.0",
+  "description": "Alerts when new replies appear on Write For California DBD posts",
+  "permissions": [
+    "notifications",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://writeforcalifornia.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://writeforcalifornia.com/p/dbd-*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

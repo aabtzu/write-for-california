@@ -111,6 +111,22 @@ write_for_california/
     └── charts.py      # Data visualization
 ```
 
+## Browser Extension
+
+A Chrome extension that monitors DBD pages for "new reply" badges and sends desktop notifications.
+
+### Installation
+
+1. Open Chrome and go to `chrome://extensions/`
+2. Enable "Developer mode" (top right)
+3. Click "Load unpacked"
+4. Select the `extension/` folder from this repo
+
+The extension will:
+- Monitor any open DBD page for "new reply" indicators
+- Send desktop notifications when new replies appear
+- Play a sound alert
+
 ## State Files
 
 All state and data files are stored in `~/.wfc/`:
