@@ -10,12 +10,22 @@ import requests
 from .config import ARCHIVE_URL, BASE_URL, ACTIVE_HOUR_START, ACTIVE_HOUR_END
 
 
-def send_notification(title: str, message: str):
-    """Send a macOS alert popup."""
-    subprocess.run([
-        "osascript", "-e",
-        f'display alert "{title}" message "{message}"'
-    ])
+def send_notification(title: str, message: str, url: Optional[str] = None):
+    """Send a macOS alert popup with option to open URL."""
+    if url:
+        # Dialog with two buttons - "Go to page" and "OK thanks"
+        script = f'''
+        set theResult to display alert "{title}" message "{message}" buttons {{"OK thanks", "Go to page"}} default button "Go to page"
+        if button returned of theResult is "Go to page" then
+            open location "{url}/comments"
+        end if
+        '''
+        subprocess.run(["osascript", "-e", script])
+    else:
+        subprocess.run([
+            "osascript", "-e",
+            f'display alert "{title}" message "{message}"'
+        ])
 
 
 def timestamp() -> str:

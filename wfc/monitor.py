@@ -66,7 +66,8 @@ def main():
                 print(f"[{timestamp()}] New DBD post detected!")
                 send_notification(
                     "New DBD Post",
-                    "New daily post available"
+                    "New daily post available",
+                    url=latest_url
                 )
             current_url = latest_url
             # Extract post name for display
@@ -95,7 +96,8 @@ def main():
             if old_count > 0:
                 send_notification(
                     "Substack Update",
-                    f"{diff} new comment(s) on DBD (now {new_count} total)"
+                    f"{diff} new comment(s) on DBD (now {new_count} total)",
+                    url=current_url
                 )
             print(f"[{timestamp()}] NEW COMMENTS! {old_count} → {new_count} (+{diff})")
             save_state(current_url, new_count)
