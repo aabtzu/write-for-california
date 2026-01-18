@@ -12,6 +12,7 @@ dependencies = [
 wfc-monitor = "wfc.monitor:main"
 wfc-scrape = "wfc.scraper:main"
 wfc-chart = "wfc.charts:main"
+wfc-web = "wfc.webapp:main"
 
 [build-system]
 requires = ["setuptools>=61.0"]
