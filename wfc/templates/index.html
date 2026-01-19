@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBD Stats</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect fill='%23fbbf24' width='32' height='32' rx='4'/><text x='16' y='22' text-anchor='middle' font-size='18'>🐾</text></svg>">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>
+            <span class="logo">🐾</span>
+            Write For California DBD Stats
+        </h1>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="value">{{ stats.total_posts }}</div>
+                <div class="label">Total Posts</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">{{ "{:,}".format(stats.total_comments) }}</div>
+                <div class="label">Total Comments</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">{{ stats.avg_comments }}</div>
+                <div class="label">Avg Comments/Post</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">{{ stats.avg_unique }}</div>
+                <div class="label">Avg Unique Commenters/Day</div>
+            </div>
+            <div class="stat-card">
+                <div class="value">{{ stats.total_unique_commenters }}</div>
+                <div class="label">Total Unique Commenters</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <form method="GET" action="/">
+                <label for="chart_type">Chart Type:</label>
+                <select name="chart_type" id="chart_type">
+                    <option value="scatter" {% if chart_type == 'scatter' %}selected{% endif %}>Scatter</option>
+                    <option value="line" {% if chart_type == 'line' %}selected{% endif %}>Line</option>
+                </select>
+
+                <label for="start_date">Start Date:</label>
+                <input type="date" name="start_date" id="start_date" value="{{ start_date }}">
+
+                <label for="end_date">End Date:</label>
+                <input type="date" name="end_date" id="end_date" value="{{ end_date }}">
+
+                <button type="submit">Update</button>
+            </form>
+        </div>
+
+        <h2>Comments Over Time</h2>
+        <div class="chart-container">
+            {% if chart_b64 %}
+            <img src="data:image/png;base64,{{ chart_b64 }}" alt="Comments Chart">
+            {% else %}
+            <p>No data available for the selected date range.</p>
+            {% endif %}
+        </div>
+
+        <div class="grid">
+            <div>
+                <h2>Top Commenters</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="rank">#</th>
+                            <th>Username</th>
+                            <th class="num">Comments</th>
+                            <th class="num">Posts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commenter in top_commenters %}
+                        <tr>
+                            <td class="rank">{{ loop.index }}</td>
+                            <td class="username">{{ commenter.username }}</td>
+                            <td class="num">{{ commenter.total }}</td>
+                            <td class="num">{{ commenter.posts }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <h2>Commenters Distribution</h2>
+                <div class="chart-container">
+                    {% if histogram_b64 %}
+                    <img src="data:image/png;base64,{{ histogram_b64 }}" alt="Histogram">
+                    {% else %}
+                    <p>No histogram data available.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
