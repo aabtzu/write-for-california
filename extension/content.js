@@ -87,6 +87,19 @@
   console.log('[WFC Notifier] Started monitoring for new replies');
   setInterval(monitor, CHECK_INTERVAL);
 
+  // Test mode: type "wfctest" anywhere on the page to trigger a test notification
+  let testBuffer = '';
+  document.addEventListener('keypress', (e) => {
+    testBuffer += e.key;
+    if (testBuffer.length > 7) testBuffer = testBuffer.slice(-7);
+    if (testBuffer === 'wfctest') {
+      console.log('[WFC Notifier] Test mode triggered!');
+      lastNotificationTime = 0; // Reset cooldown
+      showNotification(3);
+      testBuffer = '';
+    }
+  });
+
   // Also monitor for DOM changes (in case new reply badges are added dynamically)
   const observer = new MutationObserver(() => {
     const count = checkForNewReplies();
