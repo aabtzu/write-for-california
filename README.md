@@ -7,6 +7,7 @@ Tools for managing and analyzing DBD (Daily Bear Dump) posts on [Write For Calif
 - **Monitor** - Real-time notifications when new comments appear on the daily DBD post
 - **Scraper** - Collect historical data from DBD posts (comments, unique commenters, poll IDs)
 - **Charts** - Generate visualizations of DBD activity over time
+- **DBD Automation** - Create and schedule DBD posts with polls via Substack API
 
 ## Installation
 
@@ -86,6 +87,49 @@ python3 -m wfc.charts --type line --no-show --save my_chart.png
 
 Charts are saved to `~/.wfc/charts/`.
 
+### DBD Automation
+
+Create and schedule DBD posts with polls via Substack's API.
+
+**Note:** The `wfc-dbd` command is installed when you run `pip install -e .` - it's defined as an entry point in `pyproject.toml`, not as a standalone script file.
+
+#### Generate Poll Script
+
+Creates JavaScript that you run in your browser's developer console while logged into Substack:
+
+```bash
+# Generate poll creation script for a specific post
+wfc-dbd poll --post-id 185679050 \
+    --question "What's your favorite?" \
+    --option "Option A" \
+    --option "Option B" \
+    --option "Option C"
+
+# With custom expiry time (default is 24 hours)
+wfc-dbd poll --post-id 185679050 \
+    --question "Quick poll" \
+    --option "Yes" --option "No" \
+    --expiry 12
+```
+
+This outputs JavaScript that:
+1. Creates a new poll via the Substack API
+2. Fetches the current draft content
+3. Inserts the poll before the subscribe widget
+4. Updates the draft with the new content
+
+To use: Copy the output, open the post in Substack editor, open browser DevTools (Cmd+Option+I), paste in Console, press Enter.
+
+#### Create New Post (Planned)
+
+```bash
+# Create a new DBD post (outputs instructions for browser automation)
+wfc-dbd post --date 2026-01-26 \
+    --lede-photo "https://example.com/photo.jpg" \
+    --poll-question "Today's question" \
+    --poll-option "Option 1" --poll-option "Option 2"
+```
+
 ## Data Collected
 
 For each DBD post:
@@ -104,11 +148,13 @@ write_for_california/
 ├── README.md
 └── wfc/
     ├── __init__.py
-    ├── config.py      # Shared configuration
-    ├── utils.py       # Shared utilities
-    ├── monitor.py     # Comment monitor
-    ├── scraper.py     # Historical data scraper
-    └── charts.py      # Data visualization
+    ├── config.py           # Shared configuration
+    ├── utils.py            # Shared utilities
+    ├── monitor.py          # Comment monitor
+    ├── scraper.py          # Historical data scraper
+    ├── charts.py           # Data visualization
+    ├── dbd_automation.py   # DBD post creation & poll scripts
+    └── dbd_browser_steps.py # Browser automation helpers
 ```
 
 ## Browser Extension
