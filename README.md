@@ -120,15 +120,25 @@ This outputs JavaScript that:
 
 To use: Copy the output, open the post in Substack editor, open browser DevTools (Cmd+Option+I), paste in Console, press Enter.
 
-#### Create New Post (Planned)
+#### Create New Post
+
+Generates step-by-step instructions for creating a DBD post via browser automation:
 
 ```bash
-# Create a new DBD post (outputs instructions for browser automation)
-wfc-dbd post --date 2026-01-26 \
+# Generate automation instructions for a new post
+wfc-dbd post --date 2026-01-26 --subject "Topic of the day"
+
+# With lede photo and poll
+wfc-dbd post --date 2026-01-26 --subject "Topic" \
     --lede-photo "https://example.com/photo.jpg" \
     --poll-question "Today's question" \
     --poll-option "Option 1" --poll-option "Option 2"
+
+# Output as JSON (for programmatic use)
+wfc-dbd post --date 2026-01-26 --subject "Topic" --json
 ```
+
+This outputs detailed instructions for each step: navigating to editor, setting content via API, configuring scheduling, and publishing.
 
 ## Data Collected
 
