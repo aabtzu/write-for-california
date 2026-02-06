@@ -190,3 +190,8 @@ All state and data files are stored in `~/.wfc/`:
 - `dbd_history.db` - SQLite database with historical data
 - `charts/` - Generated chart images
 - `monitor.log` - Monitor service logs
+- `substack_cookie.txt` - Substack session cookie for API access
+
+## Useful Links
+
+- **DBD Data Sheet:** https://docs.google.com/spreadsheets/d/1xI0BYbukVXJNKxdM2pWxH3s_kvSiAMxfkDgxmubhBYQ/edit?gid=0#gid=0
