@@ -93,6 +93,28 @@ Create and schedule DBD posts with polls via Substack's API.
 
 **Note:** The `wfc-dbd` command is installed when you run `pip install -e .` - it's defined as an entry point in `pyproject.toml`, not as a standalone script file.
 
+#### Environment Selection
+
+Switch between production and test Substack sites:
+
+```bash
+# Show current environment
+python3 -m wfc.substack_api env
+
+# Switch to test site (wfctest.substack.com)
+python3 -m wfc.substack_api env test
+
+# Switch back to production
+python3 -m wfc.substack_api env prod
+
+# Or use environment variable
+WFC_ENV=test python3 -m wfc.substack_api create --date 2026-02-02 --subject "Test"
+```
+
+Each environment uses its own cookie file:
+- `~/.wfc/substack_cookie.txt` (prod)
+- `~/.wfc/substack_cookie_test.txt` (test)
+
 #### Create New Post
 
 Generates step-by-step instructions for creating a DBD post via browser automation:

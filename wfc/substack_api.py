@@ -33,7 +33,7 @@ from typing import Optional, Dict, Any, List
 
 import requests
 
-from .config import BASE_URL, STATE_DIR
+from .config import STATE_DIR, get_environment, get_site_config
 from .dbd_automation import (
     DBD_LOGO_URL,
     DBD_WELCOME_TEXT,
@@ -42,8 +42,12 @@ from .dbd_automation import (
 )
 
 
-# Cookie file location
-COOKIE_FILE = STATE_DIR / "substack_cookie.txt"
+def get_cookie_file() -> Path:
+    """Get the cookie file for the current environment."""
+    env = get_environment()
+    if env == "prod":
+        return STATE_DIR / "substack_cookie.txt"
+    return STATE_DIR / f"substack_cookie_{env}.txt"
 
 
 class SubstackAPIError(Exception):
@@ -55,8 +59,11 @@ class SubstackClient:
     """
     Substack API client using session cookie authentication.
 
-    The session cookie (substack.sid) must be saved to ~/.wfc/substack_cookie.txt
-    You can get this from your browser's dev tools after logging into Substack.
+    The session cookie (connect.sid) is loaded from:
+    - ~/.wfc/substack_cookie.txt (prod)
+    - ~/.wfc/substack_cookie_test.txt (test)
+
+    Set environment with: WFC_ENV=test or `wfc env test`
     """
 
     def __init__(self, cookie: Optional[str] = None):
@@ -66,8 +73,11 @@ class SubstackClient:
         Args:
             cookie: Substack session cookie. If not provided, reads from cookie file.
         """
-        self.base_url = BASE_URL
-        self.api_base = f"{BASE_URL}/api/v1"
+        site_config = get_site_config()
+        self.env = get_environment()
+        self.base_url = site_config["base_url"]
+        self.site_name = site_config["name"]
+        self.api_base = f"{self.base_url}/api/v1"
 
         if cookie:
             self.cookie = cookie
@@ -81,15 +91,18 @@ class SubstackClient:
             "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
         })
 
+        print(f"[{self.env.upper()}] Using {self.site_name} ({self.base_url})")
+
     def _load_cookie(self) -> str:
         """Load cookie from file."""
-        if not COOKIE_FILE.exists():
+        cookie_file = get_cookie_file()
+        if not cookie_file.exists():
             raise SubstackAPIError(
-                f"Cookie file not found: {COOKIE_FILE}\n"
-                "Please save your substack.sid cookie value to this file.\n"
-                "You can find it in Chrome DevTools > Application > Cookies > substack.com"
+                f"Cookie file not found: {cookie_file}\n"
+                f"Please save your connect.sid cookie value to this file.\n"
+                "You can find it in Chrome DevTools > Application > Cookies"
             )
-        return COOKIE_FILE.read_text().strip()
+        return cookie_file.read_text().strip()
 
     def _request(self, method: str, endpoint: str, **kwargs) -> Dict[str, Any]:
         """Make an API request."""
@@ -294,9 +307,14 @@ class SubstackClient:
 def main():
     """CLI entry point."""
     import argparse
+    from .config import set_environment, SITES
 
     parser = argparse.ArgumentParser(description="Substack API client for DBD posts")
     subparsers = parser.add_subparsers(dest="command")
+
+    # Environment management
+    env_parser = subparsers.add_parser("env", help="Show or set environment (prod/test)")
+    env_parser.add_argument("target", nargs="?", choices=list(SITES.keys()), help="Environment to switch to")
 
     # Create DBD post
     create_parser = subparsers.add_parser("create", help="Create a DBD post draft")
@@ -314,14 +332,28 @@ def main():
     update_parser.add_argument("--subtitle", help="New subtitle")
 
     # Set cookie
-    cookie_parser = subparsers.add_parser("set-cookie", help="Save Substack cookie")
-    cookie_parser.add_argument("cookie", help="substack.sid cookie value")
+    cookie_parser = subparsers.add_parser("set-cookie", help="Save Substack cookie for current environment")
+    cookie_parser.add_argument("cookie", help="connect.sid cookie value")
 
     args = parser.parse_args()
 
+    if args.command == "env":
+        if args.target:
+            set_environment(args.target)
+            site = SITES[args.target]
+            print(f"Switched to {args.target.upper()}: {site['name']} ({site['base_url']})")
+        else:
+            env = get_environment()
+            print(f"Current environment: {env.upper()}")
+            for name, site in SITES.items():
+                marker = " <-- active" if name == env else ""
+                print(f"  {name}: {site['base_url']}{marker}")
+        return
+
     if args.command == "set-cookie":
-        COOKIE_FILE.write_text(args.cookie)
-        print(f"Cookie saved to {COOKIE_FILE}")
+        cookie_file = get_cookie_file()
+        cookie_file.write_text(args.cookie)
+        print(f"Cookie saved to {cookie_file}")
         return
 
     if args.command == "create":
