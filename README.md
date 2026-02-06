@@ -183,6 +183,10 @@ The extension will:
 - Send desktop notifications when new replies appear
 - Play a sound alert
 
+### Testing the Extension
+
+Type `wfctest` anywhere on any webpage to trigger a test notification. This verifies the extension is loaded and notifications are working.
+
 ## State Files
 
 All state and data files are stored in `~/.wfc/`:
